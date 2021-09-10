@@ -1,0 +1,7 @@
+name: EmpireFactions
+version: ${project.version}
+main: me.matzhilven.empirefactions.EmpireFactions
+api-version: 1.17
+authors: [ MatzHilven ]
+commands:
+  empire:
