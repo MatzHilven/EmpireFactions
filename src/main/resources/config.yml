@@ -4,3 +4,6 @@ mysql:
   database: "database"
   username: "username"
   password: "password"
+
+
+max-players-in-faction: 10

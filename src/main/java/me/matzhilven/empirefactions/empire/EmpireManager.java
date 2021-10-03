@@ -4,9 +4,7 @@ import me.matzhilven.empirefactions.EmpireFactions;
 import me.matzhilven.empirefactions.utils.StringUtils;
 import org.bukkit.entity.Player;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class EmpireManager {
 
@@ -21,7 +19,7 @@ public class EmpireManager {
     }
 
     private void loadEmpires() {
-
+        main.getDb().loadEmpires();
     }
 
     public Optional<Empire> getEmpire(Player player) {
@@ -37,10 +35,23 @@ public class EmpireManager {
     }
 
     public Optional<Empire> byName(String name) {
-        return empires.stream().filter(empire -> StringUtils.removeColor(empire.getName()).equals(name)).findAny();
+        return empires.stream().filter(empire -> StringUtils.removeColorCodes(empire.getName()).equals(name)).findAny();
     }
 
     public void addEmpire(Empire empire) {
         empires.add(empire);
+        main.getDb().addEmpire(empire);
+    }
+
+    public List<Empire> getList() {
+        return new ArrayList<>(empires);
+    }
+
+    public Optional<Empire> getEmpire(UUID uuid) {
+        return empires.stream().filter(empire -> empire.getUniqueId().toString().equals(uuid.toString())).findFirst();
+    }
+
+    public Optional<Empire> getEmpire(String name) {
+        return empires.stream().filter(empire -> empire.getName().equalsIgnoreCase(name)).findFirst();
     }
 }

@@ -10,6 +10,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.util.StringUtil;
+
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class DemoteSubCommand implements SubCommand {
 
@@ -57,6 +61,16 @@ public class DemoteSubCommand implements SubCommand {
             StringUtils.sendMessage(target, Messager.DEMOTE_SUCCESS_TARGET.replace("%rank%", targetRank.getName()));
         }
 
+    }
+
+    @Override
+    public ArrayList<String> onTabComplete(CommandSender sender, String[] args) {
+        if (args.length == 2) {
+            return StringUtil.copyPartialMatches(args[1],
+                    main.getEmpireManager().getEmpires().stream().map(Empire::getName).collect(Collectors.toList()),
+                    new ArrayList<>());
+        }
+        return null;
     }
 
     @Override

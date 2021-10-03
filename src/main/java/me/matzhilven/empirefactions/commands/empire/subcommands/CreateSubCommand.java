@@ -9,6 +9,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
+import java.util.ArrayList;
+
 public class CreateSubCommand implements SubCommand {
 
     private final EmpireFactions main;
@@ -30,7 +32,12 @@ public class CreateSubCommand implements SubCommand {
         }
 
         main.getEmpireManager().addEmpire(new Empire(args[1], Bukkit.getPlayer(args[2]).getUniqueId()));
-        StringUtils.sendMessage(sender, Messager.CREATE_SUCCESS.replace("%empire%", args[1]));
+        StringUtils.sendMessage(sender, Messager.CREATE_SUCCESS_EMPIRE.replace("%empire%", args[1]));
+    }
+
+    @Override
+    public ArrayList<String> onTabComplete(CommandSender sender, String[] args) {
+        return null;
     }
 
     @Override

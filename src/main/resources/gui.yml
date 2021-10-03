@@ -1,0 +1,16 @@
+main:
+  title: "&aChoose Empire"
+  slots: 27
+  items:
+    empire1:
+      material: STONE
+      lore:
+        - "&7Click to join %name%"
+        - "&7(%players%)"
+      slot: 11
+    empire2:
+      material: STONE
+      lore:
+        - "&7Click to join %name%"
+        - "&7(%players%)"
+      slot: 15

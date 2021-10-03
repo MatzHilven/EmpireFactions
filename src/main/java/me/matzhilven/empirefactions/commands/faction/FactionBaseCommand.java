@@ -1,4 +1,4 @@
-package me.matzhilven.empirefactions.commands.empire;
+package me.matzhilven.empirefactions.commands.faction;
 
 import me.matzhilven.empirefactions.EmpireFactions;
 import me.matzhilven.empirefactions.commands.SubCommand;
@@ -14,27 +14,24 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class EmpireBaseCommand implements CommandExecutor, TabExecutor {
+public class FactionBaseCommand implements CommandExecutor, TabExecutor {
 
     private final EmpireFactions main;
 
     private final Map<String, SubCommand> subCommands = new HashMap<>();
 
-    public EmpireBaseCommand(EmpireFactions main) {
+    public FactionBaseCommand(EmpireFactions main) {
         this.main = main;
 
-        main.getCommand("empire").setExecutor(this);
-        main.getCommand("empire").setTabCompleter(this);
+        main.getCommand("faction").setExecutor(this);
+        main.getCommand("faction").setTabCompleter(this);
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!sender.hasPermission("empire.empire")) {
+        if (!sender.hasPermission("empire.faction")) {
             StringUtils.sendMessage(sender, Messager.INVALID_PERMISSION);
             return true;
         }
@@ -46,22 +43,23 @@ public class EmpireBaseCommand implements CommandExecutor, TabExecutor {
             }
             Player player = (Player) sender;
             if (main.getEmpireManager().isInEmpire(player)) {
-                Empire empire = main.getEmpireManager().getEmpire(player).get();
+                Optional<Faction> optionalFaction = main.getEmpireManager().getEmpire(player).get().getFaction(player);
+                if (!optionalFaction.isPresent()) {
+                    StringUtils.sendMessage(player, Messager.NOT_IN_FACTION);
+                    return true;
+                }
+
+                Faction faction = optionalFaction.get();
 
                 List<String> msg = new ArrayList<>();
 
-                for (String s : Messager.EMPIRE_INFO) {
+                for (String s : Messager.FACTION_INFO) {
                     msg.add(s
-                            .replace("%empire%", empire.getNameColored())
-                            .replace("%description%", empire.getDescription())
-                            .replace("%members_count%", String.valueOf(empire.getAll().size()))
-                            .replace("%power%", StringUtils.format(empire.getPower()))
-                            .replace("%land%", String.valueOf(empire.getSubFactions().stream().map(Faction::getChunks).count()))
-                            .replace("%emperor%", Bukkit.getOfflinePlayer(empire.getLeader()).getName() == null ? "N/A" :  Bukkit.getOfflinePlayer(empire.getLeader()).getName())
-                            .replace("%cores%", StringUtils.getFormattedCores(empire))
-                            .replace("%admins%", StringUtils.getFormattedList(empire.getAdmins()))
-                            .replace("%moderators%", StringUtils.getFormattedList(empire.getModerators()))
-                            .replace("%members%", StringUtils.getFormattedList(empire.getMembers())));
+                            .replace("%faction%", faction.getNameColored())
+                            .replace("%description%", faction.getDescription())
+                            .replace("%members_count%", String.valueOf(faction.getMembers().size() + 1))
+                            .replace("%leader%", Bukkit.getOfflinePlayer(faction.getLeader()).getName() == null ? "N/A" :  Bukkit.getOfflinePlayer(faction.getLeader()).getName())
+                            .replace("%members%", StringUtils.getFormattedList(faction.getMembers())));
                 }
 
                 StringUtils.sendMessage(sender, msg);

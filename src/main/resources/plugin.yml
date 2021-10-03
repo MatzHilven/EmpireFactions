@@ -5,3 +5,6 @@ api-version: 1.17
 authors: [ MatzHilven ]
 commands:
   empire:
+  faction:
+    aliases:
+      - f

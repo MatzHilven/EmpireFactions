@@ -8,10 +8,12 @@ import me.matzhilven.empirefactions.utils.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class InfoSubCommand implements SubCommand {
 
@@ -41,18 +43,29 @@ public class InfoSubCommand implements SubCommand {
 
         for (String s : Messager.EMPIRE_INFO) {
             msg.add(s
-                    .replace("%empire%", empire.getName())
+                    .replace("%empire%", empire.getNameColored())
                     .replace("%description%", empire.getDescription())
                     .replace("%members_count%", String.valueOf(empire.getAll().size()))
                     .replace("%power%", StringUtils.format(empire.getPower()))
                     .replace("%land%", "TODO")
-                    .replace("%emperor%", Bukkit.getOfflinePlayer(empire.getLeader()).getName())
+                    .replace("%emperor%", Bukkit.getOfflinePlayer(empire.getLeader()).getName() == null ? "N/A" :  Bukkit.getOfflinePlayer(empire.getLeader()).getName())
+                    .replace("%cores%", StringUtils.getFormattedCores(empire))
                     .replace("%admins%", StringUtils.getFormattedList(empire.getAdmins()))
                     .replace("%moderators%", StringUtils.getFormattedList(empire.getModerators()))
                     .replace("%members%", StringUtils.getFormattedList(empire.getMembers())));
         }
 
         StringUtils.sendMessage(sender, msg);
+    }
+
+    @Override
+    public ArrayList<String> onTabComplete(CommandSender sender, String[] args) {
+        if (args.length == 2) {
+            return StringUtil.copyPartialMatches(args[1],
+                    main.getEmpireManager().getEmpires().stream().map(Empire::getName).collect(Collectors.toList()),
+                    new ArrayList<>());
+        }
+        return null;
     }
 
     @Override

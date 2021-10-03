@@ -1,53 +1,70 @@
-package me.matzhilven.empirefactions.commands.empire.subcommands;
+package me.matzhilven.empirefactions.commands.faction.subcommands;
 
 import me.matzhilven.empirefactions.EmpireFactions;
 import me.matzhilven.empirefactions.commands.SubCommand;
 import me.matzhilven.empirefactions.empire.Empire;
+import me.matzhilven.empirefactions.empire.faction.Faction;
 import me.matzhilven.empirefactions.utils.Messager;
 import me.matzhilven.empirefactions.utils.StringUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class SetDescriptionSubCommand implements SubCommand {
+public class FactionAcceptSubCommand implements SubCommand {
 
     private final EmpireFactions main;
 
-    public SetDescriptionSubCommand(EmpireFactions main) {
+    public FactionAcceptSubCommand(EmpireFactions main) {
         this.main = main;
     }
 
     @Override
     public void onCommand(CommandSender sender, Command command, String[] args) {
-        if (args.length < 2) {
+        if (args.length != 2) {
             StringUtils.sendMessage(sender, getUsage());
             return;
         }
 
-        Optional<Empire> optionalEmpire = main.getEmpireManager().byName(args[1]);
+        Player player = (Player) sender;
+
+        Optional<Empire> optionalEmpire = main.getEmpireManager().getEmpire(player);
 
         if (!optionalEmpire.isPresent()) {
-            StringUtils.sendMessage(sender, Messager.INVALID_EMPIRE);
+            StringUtils.sendMessage(sender, Messager.NOT_IN_EMPIRE);
             return;
         }
 
-        String description = String.join(" ", args).replace(args[0], "").replace(args[1], "").replaceFirst("  ", "");
-
         Empire empire = optionalEmpire.get();
-        empire.setDescription(description);
 
-        StringUtils.sendMessage(sender, Messager.SET_DESCRIPTION.replace("%description%", description));
+        Optional<Faction> optionalFaction = empire.getFaction(args[1]);
+
+        if (!optionalFaction.isPresent()) {
+            StringUtils.sendMessage(sender, Messager.INVALID_FACTION);
+            return;
+        }
+
+        Faction faction = optionalFaction.get();
+        faction.addMember(player);
     }
 
     @Override
     public ArrayList<String> onTabComplete(CommandSender sender, String[] args) {
+        Player player = (Player) sender;
+
+        Optional<Empire> optionalEmpire = main.getEmpireManager().getEmpire(player);
+
+        if (!optionalEmpire.isPresent()) return null;
+
         if (args.length == 2) {
             return StringUtil.copyPartialMatches(args[1],
-                    main.getEmpireManager().getEmpires().stream().map(Empire::getName).collect(Collectors.toList()),
+                    optionalEmpire.get().getSubFactions().stream().map(Faction::getName).collect(Collectors.toList()),
                     new ArrayList<>());
         }
         return null;
@@ -55,16 +72,16 @@ public class SetDescriptionSubCommand implements SubCommand {
 
     @Override
     public String getName() {
-        return "setdescription";
+        return "accept";
     }
 
     @Override
     public String getUsage() {
-        return Messager.USAGE_SET_DESCRIPTION;
+        return Messager.USAGE_ACCEPT;
     }
 
     @Override
     public String getPermission() {
-        return "empire.setdescription";
+        return "faction.accept-invite";
     }
 }

@@ -1,62 +1,68 @@
 package me.matzhilven.empirefactions.empire;
 
+import me.matzhilven.empirefactions.EmpireFactions;
 import me.matzhilven.empirefactions.empire.core.Core;
 import me.matzhilven.empirefactions.empire.core.CoreType;
+import me.matzhilven.empirefactions.empire.faction.Faction;
 import me.matzhilven.empirefactions.empire.rank.FactionRank;
-import me.matzhilven.empirefactions.faction.Faction;
+import me.matzhilven.empirefactions.empire.region.Region;
 import me.matzhilven.empirefactions.utils.Messager;
 import me.matzhilven.empirefactions.utils.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.entity.EnderCrystal;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.util.BoundingBox;
+import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Empire {
 
     private final String name;
+    private final UUID uuid;
+    private final List<UUID> admins;
+    private final List<UUID> moderators;
+    private final List<UUID> members;
+    private List<Core> cores;
+    private List<Faction> subFactions;
+    private UUID leader;
     private String description;
     private ChatColor color;
 
-    private UUID leader;
+    private Region region;
+    private Region jurisdiction;
 
-    private List<UUID> admins;
-    private List<UUID> moderators;
-    private List<UUID> members;
-
-    private List<Core> cores;
-    private List<Faction> subFactions;
-
-    private BoundingBox region;
-    private BoundingBox jurisdiction;
+    public Empire(String name, UUID uuid, List<UUID> admins, List<UUID> moderators, List<UUID> members, List<Core> cores,
+                  List<Faction> subFactions, UUID leader, String description, ChatColor color, Region region,
+                  Region jurisdiction) {
+        this.name = name;
+        this.uuid = uuid;
+        this.admins = admins;
+        this.moderators = moderators;
+        this.members = members;
+        this.cores = cores;
+        this.subFactions = subFactions;
+        this.leader = leader;
+        this.description = description;
+        this.color = color;
+        this.region = region;
+        this.jurisdiction = jurisdiction;
+    }
 
     public Empire(String name, UUID leader) {
-        this.name = name;
-        this.description = "";
-        this.color = ChatColor.BLUE;
-
-        this.leader = leader;
-
-        this.admins = new ArrayList<>();
-        this.moderators = new ArrayList<>();
-        this.members = new ArrayList<>();
-
-        this.cores = Arrays.asList(new Core(CoreType.BASE), new Core(CoreType.OUTPOST),
-                new Core(CoreType.OUTPOST), new Core(CoreType.OUTPOST));
-
-        this.subFactions = new ArrayList<>();
-
-        this.region = new BoundingBox();
-        this.jurisdiction = new BoundingBox();
+        this(name, UUID.randomUUID(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
+                new ArrayList<>(), leader, "", ChatColor.BLUE, new Region(), new Region());
     }
 
     public String getName() {
         return name;
+    }
+
+    public String getNameColored() {
+        return StringUtils.colorize(color + name);
     }
 
 
@@ -116,6 +122,9 @@ public class Empire {
 
     public void addMember(UUID member) {
         members.add(member);
+        String name = Bukkit.getPlayer(member).getName();
+        getOnline().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).forEach(player ->
+                StringUtils.sendMessage(player, Messager.JOINED.replace("%player%", name)));
     }
 
     public void removeMember(UUID member) {
@@ -136,27 +145,32 @@ public class Empire {
 
     public void removeSubFaction(Faction subFaction) {
         subFactions.remove(subFaction);
+        EmpireFactions.getPlugin(EmpireFactions.class).getDb().removeFaction(subFaction);
     }
 
-    public BoundingBox getRegion() {
+    public Region getRegion() {
         return region;
     }
 
-    public void setRegion(BoundingBox region) {
+    public void setRegion(Region region) {
         this.region = region;
     }
 
-    public BoundingBox getJurisdiction() {
+    public Region getJurisdiction() {
         return jurisdiction;
+    }
+
+    public void setJurisdiction(Region jurisdiction) {
+        this.jurisdiction = jurisdiction;
     }
 
     public boolean isIn(Player player) {
         UUID uuid = player.getUniqueId();
-        return leader == uuid || admins.contains(uuid) || moderators.contains(uuid) || members.contains(uuid);
+        return leader.toString().equals(uuid.toString()) || admins.contains(uuid) || moderators.contains(uuid) || members.contains(uuid);
     }
 
     public boolean isInBase(Player player) {
-        return region.contains(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
+        return region.contains(player.getLocation().getX(), player.getLocation().getZ());
     }
 
     public List<UUID> getAll() {
@@ -176,6 +190,7 @@ public class Empire {
         int power = 0;
 
         for (Core core : cores) {
+            if (!core.isAlive()) continue;
             power += core.getPower();
         }
 
@@ -230,5 +245,56 @@ public class Empire {
                 return true;
         }
         return true;
+    }
+
+    public UUID getUniqueId() {
+        return uuid;
+    }
+
+    public void addCore(Location location, CoreType coreType) {
+        cores.add(new Core(coreType, location));
+
+        EnderCrystal enderCrystal = (EnderCrystal) location.getWorld().spawnEntity(location, EntityType.ENDER_CRYSTAL);
+        enderCrystal.setMetadata("empire", new FixedMetadataValue(EmpireFactions.getPlugin(EmpireFactions.class), getUniqueId().toString()));
+    }
+
+    public Core removeCore(Location location) {
+        for (Core core : cores) {
+            if (!core.isAlive()) continue;
+            if (core.getLocation().distanceSquared(location) < 200) {
+                core.setAlive(false);
+                return core;
+            }
+        }
+        return null;
+    }
+
+    public void setCores(List<Core> cores) {
+        this.cores = cores;
+    }
+
+    public void setSubFactions(List<Faction> subFactions) {
+        this.subFactions = subFactions;
+    }
+
+    public Optional<Faction> getFaction(Player player) {
+        return subFactions.stream().filter(faction -> faction.isIn(player)).findFirst();
+    }
+
+    public Optional<Faction> getFaction(String name) {
+        return subFactions.stream().filter(faction -> faction.getNormalizedName().equalsIgnoreCase(name)).findFirst();
+    }
+
+    public List<Player> getStaff() {
+        List<Player> staff = new ArrayList<>();
+
+        if (Bukkit.getPlayer(leader) != null) staff.add(Bukkit.getPlayer(leader));
+
+        for (UUID uuid : admins) {
+            Player player = Bukkit.getPlayer(uuid);
+            if (player != null) staff.add(player);
+        }
+
+        return staff;
     }
 }

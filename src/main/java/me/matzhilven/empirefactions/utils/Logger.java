@@ -10,4 +10,8 @@ public class Logger {
     public static void log(String s) {
         Bukkit.getLogger().log(Level.INFO, String.format("[%s] " + s, EmpireFactions.getPlugin(EmpireFactions.class).getDescription().getName()));
     }
+
+    public static void severe(String s) {
+        Bukkit.getLogger().log(Level.SEVERE, String.format("[%s] " + s, EmpireFactions.getPlugin(EmpireFactions.class).getDescription().getName()));
+    }
 }
