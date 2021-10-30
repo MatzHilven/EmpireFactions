@@ -34,11 +34,6 @@ public class EmpireBaseCommand implements CommandExecutor, TabExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!sender.hasPermission("empire.empire")) {
-            StringUtils.sendMessage(sender, Messager.INVALID_PERMISSION);
-            return true;
-        }
-
         if (args.length == 0) {
             if (!(sender instanceof Player)) {
                 StringUtils.sendMessage(sender, Messager.INVALID_SENDER);
@@ -56,7 +51,7 @@ public class EmpireBaseCommand implements CommandExecutor, TabExecutor {
                             .replace("%description%", empire.getDescription())
                             .replace("%members_count%", String.valueOf(empire.getAll().size()))
                             .replace("%power%", StringUtils.format(empire.getPower()))
-                            .replace("%land%", String.valueOf(empire.getSubFactions().stream().map(Faction::getChunks).count()))
+                            .replace("%land%", String.valueOf(empire.getSubFactions().stream().map(Faction::getAmountClaimed).mapToInt(Integer::intValue).sum()))
                             .replace("%emperor%", Bukkit.getOfflinePlayer(empire.getLeader()).getName() == null ? "N/A" :  Bukkit.getOfflinePlayer(empire.getLeader()).getName())
                             .replace("%cores%", StringUtils.getFormattedCores(empire))
                             .replace("%admins%", StringUtils.getFormattedList(empire.getAdmins()))
@@ -81,7 +76,7 @@ public class EmpireBaseCommand implements CommandExecutor, TabExecutor {
 
         if (sender instanceof Player) {
             Player p = (Player) sender;
-            if (!p.hasPermission(subCommands.get(args[0]).getPermission())) {
+            if (subCommands.get(args[0]).getPermission() != null && !p.hasPermission(subCommands.get(args[0]).getPermission())) {
                 StringUtils.sendMessage(sender, Messager.INVALID_PERMISSION);
                 return true;
             }
@@ -102,6 +97,7 @@ public class EmpireBaseCommand implements CommandExecutor, TabExecutor {
         if (args.length == 1) {
             return StringUtil.copyPartialMatches(args[0], subCommands.keySet(), new ArrayList<>());
         } else {
+            if (subCommands.get(args[0]) == null) return null;
             return subCommands.get(args[0]).onTabComplete(sender, args);
         }
     }

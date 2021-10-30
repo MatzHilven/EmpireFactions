@@ -12,6 +12,7 @@ public class DataSource {
 
     public DataSource(EmpireFactions main) {
         ds = new HikariDataSource();
+
         ds.setJdbcUrl("jdbc:mysql://"
                 + main.getConfig().getString("mysql.host") +
                 ":" + main.getConfig().getInt("mysql.port") + "/"
@@ -19,6 +20,11 @@ public class DataSource {
         ds.setUsername(main.getConfig().getString("mysql.username"));
         ds.setPassword(main.getConfig().getString("mysql.password"));
 
+        ds.setMinimumIdle(2);
+        ds.setMaximumPoolSize(20);
+        ds.setIdleTimeout(120000);
+        ds.setConnectionTimeout(3000000);
+        ds.setLeakDetectionThreshold(3000000);
     }
 
     public Connection getConnection() throws SQLException {

@@ -5,5 +5,32 @@ mysql:
   username: "username"
   password: "password"
 
-
 max-players-in-faction: 10
+max-claimed-chunks: 10
+power-loss-per-death: 1
+power-per-hour: 5
+
+f-map:
+  width: 53
+  height: 13
+  key: "+"
+  color:
+    center: "DARK_PURPLE"
+    owned: "GREEN"
+    enemy: "RED"
+    neutral: "GRAY"
+    default: "WHITE"
+
+region-size:
+  1:
+    base: 25
+    jurisdiction: 100
+  2:
+    base: 25
+    jurisdiction: 100
+  3:
+    base: 25
+    jurisdiction: 100
+  4:
+    base: 25
+    jurisdiction: 100

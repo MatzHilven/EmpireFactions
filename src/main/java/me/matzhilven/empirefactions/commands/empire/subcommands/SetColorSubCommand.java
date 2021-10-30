@@ -3,11 +3,13 @@ package me.matzhilven.empirefactions.commands.empire.subcommands;
 import me.matzhilven.empirefactions.EmpireFactions;
 import me.matzhilven.empirefactions.commands.SubCommand;
 import me.matzhilven.empirefactions.empire.Empire;
+import me.matzhilven.empirefactions.empire.rank.EmpireRank;
 import me.matzhilven.empirefactions.utils.Messager;
 import me.matzhilven.empirefactions.utils.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
 import java.util.ArrayList;
@@ -25,19 +27,21 @@ public class SetColorSubCommand implements SubCommand {
 
     @Override
     public void onCommand(CommandSender sender, Command command, String[] args) {
-        if (args.length < 3) {
+        if (args.length != 2) {
             StringUtils.sendMessage(sender, getUsage());
             return;
         }
 
-        Optional<Empire> optionalEmpire = main.getEmpireManager().byName(args[1]);
+        Player player = (Player) sender;
+
+        Optional<Empire> optionalEmpire = main.getEmpireManager().getEmpire(player);
 
         if (!optionalEmpire.isPresent()) {
-            StringUtils.sendMessage(sender, Messager.INVALID_EMPIRE);
+            StringUtils.sendMessage(sender, Messager.NOT_IN_EMPIRE);
             return;
         }
 
-        ChatColor color = getColor(args[2]);
+        ChatColor color = getColor(args[1]);
 
         if (color == null || isInvalidColor(color)) {
             StringUtils.sendMessage(sender, Messager.INVALID_COLOR);
@@ -45,6 +49,12 @@ public class SetColorSubCommand implements SubCommand {
         }
 
         Empire empire = optionalEmpire.get();
+
+        if (!(empire.getRank(player) == EmpireRank.LEADER || empire.getRank(player) == EmpireRank.ADMIN)) {
+            StringUtils.sendMessage(sender, Messager.INVALID_PERMISSION);
+            return;
+        }
+
         empire.setColor(color);
 
         StringUtils.sendMessage(sender, Messager.SET_COLOR.replace("%color%", color + color.asBungee().getName().toUpperCase()));
@@ -61,21 +71,16 @@ public class SetColorSubCommand implements SubCommand {
 
     @Override
     public ArrayList<String> onTabComplete(CommandSender sender, String[] args) {
-        switch (args.length) {
-            case 2:
-                return StringUtil.copyPartialMatches(args[1],
-                        main.getEmpireManager().getEmpires().stream().map(Empire::getName).collect(Collectors.toList()),
-                        new ArrayList<>());
-            case 3:
-                return StringUtil.copyPartialMatches(args[2],
-                        Arrays.stream(ChatColor.values()).filter(color -> color != ChatColor.MAGIC
-                                && color != ChatColor.BOLD
-                                && color != ChatColor.STRIKETHROUGH
-                                && color != ChatColor.UNDERLINE
-                                && color != ChatColor.ITALIC
-                                && color != ChatColor.RESET)
-                                .map(chatColor -> chatColor.asBungee().getName().toUpperCase()).collect(Collectors.toList()),
-                        new ArrayList<>());
+        if (args.length == 2) {
+            return StringUtil.copyPartialMatches(args[1],
+                    Arrays.stream(ChatColor.values()).filter(color -> color != ChatColor.MAGIC
+                            && color != ChatColor.BOLD
+                            && color != ChatColor.STRIKETHROUGH
+                            && color != ChatColor.UNDERLINE
+                            && color != ChatColor.ITALIC
+                            && color != ChatColor.RESET)
+                            .map(chatColor -> chatColor.asBungee().getName().toUpperCase()).collect(Collectors.toList()),
+                    new ArrayList<>());
         }
 
         return null;
@@ -89,11 +94,6 @@ public class SetColorSubCommand implements SubCommand {
     @Override
     public String getUsage() {
         return Messager.USAGE_SET_COLOR;
-    }
-
-    @Override
-    public String getPermission() {
-        return "empire.setcolor";
     }
 
     private ChatColor getColor(String name) {

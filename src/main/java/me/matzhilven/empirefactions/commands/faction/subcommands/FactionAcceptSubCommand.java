@@ -43,6 +43,11 @@ public class FactionAcceptSubCommand implements SubCommand {
 
         Empire empire = optionalEmpire.get();
 
+        if (empire.getFaction(player).isPresent()) {
+            StringUtils.sendMessage(sender, Messager.ALREADY_IN_FACTION);
+            return;
+        }
+
         Optional<Faction> optionalFaction = empire.getFaction(args[1]);
 
         if (!optionalFaction.isPresent()) {
@@ -51,7 +56,15 @@ public class FactionAcceptSubCommand implements SubCommand {
         }
 
         Faction faction = optionalFaction.get();
-        faction.addMember(player);
+
+        if (!faction.isInvited(player)) {
+            StringUtils.sendMessage(sender, Messager.NOT_INVITED);
+            return;
+        }
+
+        if (!faction.addMember(player)) {
+            StringUtils.sendMessage(sender, Messager.MAX_PLAYERS);
+        }
     }
 
     @Override
@@ -78,10 +91,5 @@ public class FactionAcceptSubCommand implements SubCommand {
     @Override
     public String getUsage() {
         return Messager.USAGE_ACCEPT;
-    }
-
-    @Override
-    public String getPermission() {
-        return "faction.accept-invite";
     }
 }

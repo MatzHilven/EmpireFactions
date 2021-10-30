@@ -4,7 +4,7 @@ import me.matzhilven.empirefactions.EmpireFactions;
 import me.matzhilven.empirefactions.empire.core.Core;
 import me.matzhilven.empirefactions.empire.core.CoreType;
 import me.matzhilven.empirefactions.empire.faction.Faction;
-import me.matzhilven.empirefactions.empire.rank.FactionRank;
+import me.matzhilven.empirefactions.empire.rank.EmpireRank;
 import me.matzhilven.empirefactions.empire.region.Region;
 import me.matzhilven.empirefactions.utils.Messager;
 import me.matzhilven.empirefactions.utils.StringUtils;
@@ -21,40 +21,63 @@ import java.util.stream.Collectors;
 
 public class Empire {
 
-    private final String name;
+    private final int id;
     private final UUID uuid;
     private final List<UUID> admins;
     private final List<UUID> moderators;
     private final List<UUID> members;
+    private String name;
+    private Location baseCenter;
+    private Location jurisdictionCenter;
     private List<Core> cores;
     private List<Faction> subFactions;
     private UUID leader;
     private String description;
     private ChatColor color;
 
-    private Region region;
-    private Region jurisdiction;
+    private Region baseRegion;
+    private Region jurisdictionRegion;
 
-    public Empire(String name, UUID uuid, List<UUID> admins, List<UUID> moderators, List<UUID> members, List<Core> cores,
-                  List<Faction> subFactions, UUID leader, String description, ChatColor color, Region region,
-                  Region jurisdiction) {
+    public Empire(String name, UUID uuid, List<UUID> admins, List<UUID> moderators, List<UUID> members, Location baseCenter,
+                  Location jurisdictionCenter, List<Core> cores, List<Faction> subFactions, UUID leader, String description,
+                  ChatColor color, Region region, Region jurisdiction, int id) {
+        this.id = id;
         this.name = name;
         this.uuid = uuid;
         this.admins = admins;
         this.moderators = moderators;
         this.members = members;
+        this.baseCenter = baseCenter;
+        this.jurisdictionCenter = jurisdictionCenter;
         this.cores = cores;
         this.subFactions = subFactions;
         this.leader = leader;
         this.description = description;
         this.color = color;
-        this.region = region;
-        this.jurisdiction = jurisdiction;
+        this.baseRegion = region;
+        this.jurisdictionRegion = jurisdiction;
+
+        if (id == 0) return;
+        if (baseCenter != null) {
+            int baseSize = EmpireFactions.getPlugin(EmpireFactions.class).getConfig().getInt("region-size." + id + ".base");
+            setBaseRegion(new Region(baseCenter.getX() - baseSize, baseCenter.getZ() - baseSize,
+                    baseCenter.getX() + baseSize, baseCenter.getZ() + baseSize));
+        }
+
+        if (jurisdictionCenter != null) {
+            int jurisdictionSize = EmpireFactions.getPlugin(EmpireFactions.class).getConfig().getInt("region-size." + id + ".jurisdiction");
+            setJurisdictionRegion(new Region(jurisdictionCenter.getX() - jurisdictionSize, jurisdictionCenter.getZ() - jurisdictionSize,
+                    jurisdictionCenter.getX() + jurisdictionSize, jurisdictionCenter.getZ() + jurisdictionSize));
+        }
     }
 
-    public Empire(String name, UUID leader) {
-        this(name, UUID.randomUUID(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
-                new ArrayList<>(), leader, "", ChatColor.BLUE, new Region(), new Region());
+    public Empire(String name, UUID leader, Location baseCenter, Location jurisdictionCenter, int id) {
+        this(name, UUID.randomUUID(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), baseCenter, jurisdictionCenter,
+                new ArrayList<>(), new ArrayList<>(), leader, "", ChatColor.BLUE, new Region(), new Region(), id);
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getName() {
@@ -87,33 +110,21 @@ public class Empire {
     }
 
     public void setLeader(UUID leader) {
+        admins.add(this.leader);
+
         this.leader = leader;
+
+        members.remove(leader);
+        moderators.remove(leader);
+        admins.remove(leader);
     }
 
     public List<UUID> getAdmins() {
         return admins;
     }
 
-    public boolean addAdmin(UUID admin) {
-        if (admins.size() == 5) return false;
-        admins.add(admin);
-        return true;
-    }
-
-    public void removeAdmin(UUID admin) {
-        admins.remove(admin);
-    }
-
     public List<UUID> getModerators() {
         return moderators;
-    }
-
-    public void addModerator(UUID moderator) {
-        moderators.add(moderator);
-    }
-
-    public void removeModerator(UUID moderator) {
-        moderators.remove(moderator);
     }
 
     public List<UUID> getMembers() {
@@ -127,16 +138,20 @@ public class Empire {
                 StringUtils.sendMessage(player, Messager.JOINED.replace("%player%", name)));
     }
 
-    public void removeMember(UUID member) {
-        members.remove(member);
-    }
-
     public List<Core> getCores() {
         return cores;
     }
 
+    public void setCores(List<Core> cores) {
+        this.cores = cores;
+    }
+
     public List<Faction> getSubFactions() {
         return subFactions;
+    }
+
+    public void setSubFactions(List<Faction> subFactions) {
+        this.subFactions = subFactions;
     }
 
     public void addSubFaction(Faction subFaction) {
@@ -148,20 +163,20 @@ public class Empire {
         EmpireFactions.getPlugin(EmpireFactions.class).getDb().removeFaction(subFaction);
     }
 
-    public Region getRegion() {
-        return region;
+    public Region getBaseRegion() {
+        return baseRegion;
     }
 
-    public void setRegion(Region region) {
-        this.region = region;
+    public void setBaseRegion(Region baseRegion) {
+        this.baseRegion = baseRegion;
     }
 
-    public Region getJurisdiction() {
-        return jurisdiction;
+    public Region getJurisdictionRegion() {
+        return jurisdictionRegion;
     }
 
-    public void setJurisdiction(Region jurisdiction) {
-        this.jurisdiction = jurisdiction;
+    public void setJurisdictionRegion(Region jurisdictionRegion) {
+        this.jurisdictionRegion = jurisdictionRegion;
     }
 
     public boolean isIn(Player player) {
@@ -170,7 +185,29 @@ public class Empire {
     }
 
     public boolean isInBase(Player player) {
-        return region.contains(player.getLocation().getX(), player.getLocation().getZ());
+        return baseRegion.contains(player.getLocation().getX(), player.getLocation().getZ());
+    }
+
+    public Location getBaseCenter() {
+        return baseCenter;
+    }
+
+    public void setBaseCenter(Location baseCenter) {
+        this.baseCenter = baseCenter;
+        int baseSize = EmpireFactions.getPlugin(EmpireFactions.class).getConfig().getInt("region-size." + id + ".base");
+        setBaseRegion(new Region(baseCenter.getX() - baseSize, baseCenter.getZ() - baseSize,
+                baseCenter.getX() + baseSize, baseCenter.getZ() + baseSize));
+    }
+
+    public Location getJurisdictionCenter() {
+        return jurisdictionCenter;
+    }
+
+    public void setJurisdictionCenter(Location jurisdictionCenter) {
+        this.jurisdictionCenter = jurisdictionCenter;
+        int jurisdictionSize = EmpireFactions.getPlugin(EmpireFactions.class).getConfig().getInt("region-size." + id + ".jurisdiction");
+        setJurisdictionRegion(new Region(jurisdictionCenter.getX() - jurisdictionSize, jurisdictionCenter.getZ() - jurisdictionSize,
+                jurisdictionCenter.getX() + jurisdictionSize, jurisdictionCenter.getZ() + jurisdictionSize));
     }
 
     public List<UUID> getAll() {
@@ -197,16 +234,16 @@ public class Empire {
         return power;
     }
 
-    public FactionRank getRank(Player player) {
+    public EmpireRank getRank(Player player) {
         UUID uuid = player.getUniqueId();
-        if (leader == uuid) return FactionRank.LEADER;
-        if (admins.contains(uuid)) return FactionRank.ADMIN;
-        if (moderators.contains(uuid)) return FactionRank.MODERATOR;
-        return FactionRank.MEMBER;
+        if (leader.toString().equals(uuid.toString())) return EmpireRank.LEADER;
+        if (admins.contains(uuid)) return EmpireRank.ADMIN;
+        if (moderators.contains(uuid)) return EmpireRank.MODERATOR;
+        return EmpireRank.MEMBER;
     }
 
     public boolean promote(Player player, Player target) {
-        FactionRank rank = getRank(target);
+        EmpireRank rank = getRank(target);
         switch (rank) {
             case LEADER:
             case ADMIN:
@@ -228,11 +265,11 @@ public class Empire {
     }
 
     public boolean demote(Player player, Player target) {
-        FactionRank rank = getRank(target);
+        EmpireRank rank = getRank(target);
         switch (rank) {
             case LEADER:
             case ADMIN:
-                if (getRank(player) != FactionRank.LEADER) {
+                if (getRank(player) != EmpireRank.LEADER) {
                     StringUtils.sendMessage(player, Messager.INVALID_PERMISSION);
                     return false;
                 }
@@ -269,16 +306,16 @@ public class Empire {
         return null;
     }
 
-    public void setCores(List<Core> cores) {
-        this.cores = cores;
-    }
-
-    public void setSubFactions(List<Faction> subFactions) {
-        this.subFactions = subFactions;
-    }
-
     public Optional<Faction> getFaction(Player player) {
         return subFactions.stream().filter(faction -> faction.isIn(player)).findFirst();
+    }
+
+    public Optional<Faction> byPlayerUUID(UUID playerUUID) {
+        return subFactions.stream().filter(faction -> faction.isIn(playerUUID)).findFirst();
+    }
+
+    public Optional<Faction> byFactionUUID(UUID factionUUID) {
+        return subFactions.stream().filter(faction -> faction.getUniqueId().toString().equals(factionUUID.toString())).findFirst();
     }
 
     public Optional<Faction> getFaction(String name) {
@@ -296,5 +333,25 @@ public class Empire {
         }
 
         return staff;
+    }
+
+    public boolean isInJurisdiction(Player player) {
+        return jurisdictionRegion.contains(player.getLocation().getX(), player.getLocation().getZ());
+    }
+
+    public int getKills() {
+        return subFactions.stream().map(Faction::getKills).mapToInt(Integer::intValue).sum();
+    }
+
+    public int getDeaths() {
+        return subFactions.stream().map(Faction::getDeaths).mapToInt(Integer::intValue).sum();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Empire empire = (Empire) o;
+        return Objects.equals(uuid, empire.uuid);
     }
 }

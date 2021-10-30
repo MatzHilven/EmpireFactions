@@ -3,6 +3,7 @@ package me.matzhilven.empirefactions.commands.empire.subcommands;
 import me.matzhilven.empirefactions.EmpireFactions;
 import me.matzhilven.empirefactions.commands.SubCommand;
 import me.matzhilven.empirefactions.empire.Empire;
+import me.matzhilven.empirefactions.empire.faction.Faction;
 import me.matzhilven.empirefactions.utils.Messager;
 import me.matzhilven.empirefactions.utils.StringUtils;
 import org.bukkit.Bukkit;
@@ -47,7 +48,7 @@ public class InfoSubCommand implements SubCommand {
                     .replace("%description%", empire.getDescription())
                     .replace("%members_count%", String.valueOf(empire.getAll().size()))
                     .replace("%power%", StringUtils.format(empire.getPower()))
-                    .replace("%land%", "TODO")
+                    .replace("%land%", String.valueOf(empire.getSubFactions().stream().map(Faction::getAmountClaimed).mapToInt(Integer::intValue).sum()))
                     .replace("%emperor%", Bukkit.getOfflinePlayer(empire.getLeader()).getName() == null ? "N/A" :  Bukkit.getOfflinePlayer(empire.getLeader()).getName())
                     .replace("%cores%", StringUtils.getFormattedCores(empire))
                     .replace("%admins%", StringUtils.getFormattedList(empire.getAdmins()))
@@ -76,10 +77,5 @@ public class InfoSubCommand implements SubCommand {
     @Override
     public String getUsage() {
         return Messager.USAGE_INFO;
-    }
-
-    @Override
-    public String getPermission() {
-        return "empire.info";
     }
 }

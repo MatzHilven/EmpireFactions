@@ -3,6 +3,10 @@ version: ${project.version}
 main: me.matzhilven.empirefactions.EmpireFactions
 api-version: 1.17
 authors: [ MatzHilven ]
+softdepend:
+  - PlaceholderAPI
+depend:
+  - Vault
 commands:
   empire:
   faction:

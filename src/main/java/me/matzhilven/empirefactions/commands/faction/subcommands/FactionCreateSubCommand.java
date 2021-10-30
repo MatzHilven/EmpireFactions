@@ -6,7 +6,6 @@ import me.matzhilven.empirefactions.empire.Empire;
 import me.matzhilven.empirefactions.empire.faction.Faction;
 import me.matzhilven.empirefactions.utils.Messager;
 import me.matzhilven.empirefactions.utils.StringUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -65,10 +64,5 @@ public class FactionCreateSubCommand implements SubCommand {
     @Override
     public String getUsage() {
         return Messager.USAGE_CREATE_FACTION;
-    }
-
-    @Override
-    public String getPermission() {
-        return "faction.create";
     }
 }

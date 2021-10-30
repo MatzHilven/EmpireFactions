@@ -1,7 +1,9 @@
 package me.matzhilven.empirefactions.empire;
 
 import me.matzhilven.empirefactions.EmpireFactions;
+import me.matzhilven.empirefactions.empire.faction.Faction;
 import me.matzhilven.empirefactions.utils.StringUtils;
+import org.bukkit.Chunk;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -53,5 +55,48 @@ public class EmpireManager {
 
     public Optional<Empire> getEmpire(String name) {
         return empires.stream().filter(empire -> empire.getName().equalsIgnoreCase(name)).findFirst();
+    }
+
+    public Optional<Empire> getEmpireByPlayerUUID(UUID uuid) {
+        return empires.stream().filter(empire -> empire.getAll().contains(uuid)).findFirst();
+    }
+
+    public Optional<Faction> isClaimed(Chunk chunk) {
+        for (Empire empire : empires) {
+            for (Faction faction : empire.getSubFactions()) {
+                if (faction.isClaimed(chunk)) {
+                    return Optional.of(faction);
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+    public Optional<Faction> getFactionByUUID(UUID uuid) {
+        for (Empire empire : empires) {
+            for (Faction faction : empire.getSubFactions()) {
+                if (faction.getUniqueId().toString().equals(uuid.toString())) {
+                    return Optional.of(faction);
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+    public Empire getEmpireWithLeastPlayers() {
+        Empire empire = null;
+
+        for (Empire loopEmpire : empires) {
+            if (empire == null) {
+                empire = loopEmpire;
+                break;
+            }
+            if (loopEmpire.getAll().size() < empire.getAll().size()) {
+                empire = loopEmpire;
+                break;
+            }
+        }
+
+        return empire;
     }
 }

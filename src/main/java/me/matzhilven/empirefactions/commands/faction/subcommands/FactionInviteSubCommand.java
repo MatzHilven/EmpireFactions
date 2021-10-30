@@ -99,9 +99,4 @@ public class FactionInviteSubCommand implements SubCommand {
     public String getUsage() {
         return Messager.USAGE_INVITE;
     }
-
-    @Override
-    public String getPermission() {
-        return "faction.invite";
-    }
 }

@@ -25,12 +25,41 @@ public class FactionSetDescriptionSubCommand implements SubCommand {
 
     @Override
     public void onCommand(CommandSender sender, Command command, String[] args) {
+        Player player = (Player) sender;
+
+        if (main.getAdminManager().isIn(player)) {
+            if (args.length != 3) {
+                StringUtils.sendMessage(sender, Messager.HELP_ADMIN);
+                return;
+            }
+
+            Faction faction = null;
+
+            for (Empire loopEmpire : main.getEmpireManager().getEmpires()) {
+                Optional<Faction> optionalFaction = loopEmpire.getFaction(args[1]);
+                if (optionalFaction.isPresent()) {
+                    faction = optionalFaction.get();
+                    break;
+                }
+            }
+
+            if (faction == null) {
+                StringUtils.sendMessage(sender, Messager.INVALID_FACTION);
+                return;
+            }
+
+            String description = String.join(" ", args).replace(args[0], "").replace(args[1], "").replaceFirst("  ", "");
+
+            faction.setDescription(description);
+
+            StringUtils.sendMessage(sender, Messager.SET_DESCRIPTION.replace("%description%", description));
+            return;
+        }
+
         if (args.length < 2) {
             StringUtils.sendMessage(sender, getUsage());
             return;
         }
-
-        Player player = (Player) sender;
 
         Optional<Empire> optionalEmpire = main.getEmpireManager().getEmpire(player);
 
@@ -55,7 +84,7 @@ public class FactionSetDescriptionSubCommand implements SubCommand {
             return;
         }
 
-        String description = String.join(" ", args).replace(args[0], "").replace(args[1], "").replaceFirst("  ", "");
+        String description = String.join(" ", args).replace(args[0], "").replaceFirst("  ", "");
 
         faction.setDescription(description);
 
@@ -80,10 +109,5 @@ public class FactionSetDescriptionSubCommand implements SubCommand {
     @Override
     public String getUsage() {
         return Messager.USAGE_SET_DESCRIPTION_FACTION;
-    }
-
-    @Override
-    public String getPermission() {
-        return "faction.setdescription";
     }
 }

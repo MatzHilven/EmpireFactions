@@ -11,13 +11,30 @@ public class Messager {
     public static final String INVALID_SENDER = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.invalid-sender");
     public static final String INVALID_EMPIRE = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.invalid-empire");
     public static final String INVALID_FACTION = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.invalid-faction");
+    public static final String INVALID_FACTION_SELF = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.invalid-faction-self");
     public static final String INVALID_TARGET = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.invalid-target");
     public static final String INVALID_TARGET_SELF = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.invalid-target-self");
     public static final String INVALID_CORE_TYPE = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.invalid-coretype");
     public static final String INVALID_COLOR = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.invalid-color");
     public static final String INVALID_NUMBER = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.invalid-number");
+    public static final String INVALID_HOME = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.invalid-home");
+    public static final String INVALID_HOME_OTHER = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.invalid-home-other");
+    public static final String INVALID_ALLY = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.invalid-ally");
     public static final String MAX_ADMINS = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.max-admins");
+    public static final String MAX_CLAIMED = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.max-claimed");
+    public static final String MAX_PLAYERS = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.max-players");
     public static final String PROMOTE_ADMIN = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.promote-admin");
+    public static final String DEMOTE_MEMBER = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.demote-member");
+    public static final String NOT_IN_JURISDICTION = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.not-in-jurisdiction");
+    public static final String CHAT_FORMAT = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.chat-format");
+    public static final String NOT_ENOUGH_IN_BANK = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.not-enough-in-bank");
+    public static final String OWN_CORE = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.own-core");
+    public static final String ALREADY_ALLY = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.already-ally");
+    public static final String INSUFFICIENT_POWER = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.insufficient-power");
+    public static final String INSUFFICIENT_FUNDS = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.insufficient-funds");
+    public static final String NOT_IN_ADMIN_MODE = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.not-in-admin-mode");
+    public static final String RELOADED = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.reloaded");
+    public static final String KICK_LEADER = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.kick-leader");
 
     //  Usage
     public static final List<String> USAGE_EMPIRE_COMMAND = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getStringList("messages.usage-empire");
@@ -35,6 +52,35 @@ public class Messager {
     public static final String USAGE_INVITE = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-invite");
     public static final String USAGE_ACCEPT = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-accept");
     public static final String USAGE_DISBAND_FACTION = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-disband-faction");
+    public static final String USAGE_MAP = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-map");
+    public static final String USAGE_CLAIM = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-claim");
+    public static final String USAGE_UNCLAIM = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-unclaim");
+    public static final String USAGE_TRANSFER = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-transfer");
+    public static final String USAGE_TRANSFER_FACTION = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-transfer-faction");
+    public static final String USAGE_SET_CENTER = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-set-center");
+    public static final String USAGE_CHAT = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-chat");
+    public static final String USAGE_KICK = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-kick");
+    public static final String USAGE_MUTE = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-mute");
+    public static final String USAGE_UNMUTE = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-unmute");
+    public static final String USAGE_POWER_FACTION = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-power-faction");
+    public static final String USAGE_POWER = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-power");
+    public static final String USAGE_RENAME_FACTION = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-rename-faction");
+    public static final String USAGE_BALANCE = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-balance");
+    public static final String USAGE_DEPOSIT = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-deposited");
+    public static final String USAGE_WITHDRAW = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-withdrawn");
+    public static final String USAGE_SET_TITLE = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-set-title");
+    public static final String USAGE_SET_TAG = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-set-tag");
+    public static final String USAGE_SET_HOME = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-set-home");
+    public static final String USAGE_HOME = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-home");
+    public static final String USAGE_PLAYER_INFO = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-player-info");
+    public static final String USAGE_OPEN = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-open");
+    public static final String USAGE_ALLY = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-ally");
+    public static final String USAGE_NEUTRAL = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-neutral");
+    public static final String USAGE_ALLOW_ALLY = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-allow-ally");
+    public static final String USAGE_JOIN = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-allow-ally");
+    public static final String USAGE_ADMIN = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-admin");
+    public static final String USAGE_RENAME = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-rename");
+    public static final String USAGE_CHATSPY = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.usage-rename");
 
     // Empire
     public static final List<String> EMPIRE_INFO = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getStringList("messages.empire-info");
@@ -50,6 +96,11 @@ public class Messager {
     public static final String RECEIVED_CORE = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.received-core");
     public static final String PLACED_CORE = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.placed-core");
     public static final String BROKEN_CORE = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.broken-core");
+    public static final String TRANSFER_SUCCESS = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.transfer-success");
+    public static final String TRANSFER_SUCCESS_TARGET = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.transfer-success-target");
+    public static final String SET_CENTER = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.set-center");
+    public static final String RENAMED = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.renamed");
+    public static final String POWER = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.power");
 
     // Faction
     public static final List<String> FACTION_INFO = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getStringList("messages.faction-info");
@@ -59,7 +110,44 @@ public class Messager {
     public static final String ALREADY_IN_FACTION = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.already-in-faction");
     public static final String INVITED = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.invited");
     public static final String INVITED_TARGET = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.invited-target");
+    public static final String NOT_INVITED = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.not-invited");
     public static final String JOINED_FACTION = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.joined-faction");
+    public static final String CLAIM = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.claim");
+    public static final String UNCLAIM = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.unclaim");
+    public static final String UNCLAIM_ALL = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.unclaim-all");
+    public static final String NOT_CLAIMED = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.not-claimed");
+    public static final String ALREADY_CLAIMED = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.already-claimed");
+    public static final String TRANSFER_SUCCESS_FACTION = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.transfer-success-faction");
+    public static final String TRANSFER_SUCCESS_FACTION_TARGET = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.transfer-success-faction-target");
+    public static final String TOGGLED_CHAT_ON = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.toggled-chat-on");
+    public static final String TOGGLED_CHAT_OFF = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.toggled-chat-off");
+    public static final String MUTED_CHAT = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.muted-chat");
+    public static final String UNMUTED_CHAT = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.unmuted-chat");
+    public static final String RENAMED_FACTION = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.renamed-faction");
+    public static final String CHAT_MUTED = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.chat-muted");
+    public static final String BALANCE = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.balance");
+    public static final String DEPOSITED = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.deposited");
+    public static final String WITHDRAWN = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.withdrawn");
+    public static final String SET_TITLE = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.set-title");
+    public static final String SET_TAG = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.set-tag");
+    public static final String SET_HOME = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.set-home");
+    public static final String HOME = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.home");
+    public static final String HOME_OTHER = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.home-other");
+    public static final List<String> PLAYER_INFO = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getStringList("messages.faction-player");
+    public static final String OPEN = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.open-faction");
+    public static final String CLOSE = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.close-faction");
+    public static final String ADDED_ALLY = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.added-ally");
+    public static final String ALLOWED_ALLY = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.allowed-ally");
+    public static final String REMOVED_ALLY = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.removed-ally");
+    public static final String KICKED_PLAYER = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.kicked-player");
+    public static final String POWER_FACTION = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.power-faction");
+    public static final String POWER_SELF = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.power-self");
+    public static final String CLOSED = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.closed");
+    public static final String ADMIN_ON = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.admin-on");
+    public static final String ADMIN_OFF = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.admin-off");
 
-
+    public static final List<String> HELP_ADMIN = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getStringList("messages.admin-help");
+    public static final String SET_POWER = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.set-power");
+    public static final String CHATSPY_ENABLED = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.chatspy-enabled");
+    public static final String CHATSPY_DISABLED = EmpireFactions.getPlugin(EmpireFactions.class).getMessages().getString("messages.chatspy-disabled");
 }

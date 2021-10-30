@@ -13,4 +13,16 @@ main:
       lore:
         - "&7Click to join %name%"
         - "&7(%players%)"
+      slot: 12
+    empire3:
+      material: STONE
+      lore:
+        - "&7Click to join %name%"
+        - "&7(%players%)"
+      slot: 14
+    empire4:
+      material: STONE
+      lore:
+        - "&7Click to join %name%"
+        - "&7(%players%)"
       slot: 15

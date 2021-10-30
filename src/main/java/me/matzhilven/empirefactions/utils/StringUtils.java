@@ -2,6 +2,7 @@ package me.matzhilven.empirefactions.utils;
 
 import me.matzhilven.empirefactions.empire.Empire;
 import me.matzhilven.empirefactions.empire.core.Core;
+import me.matzhilven.empirefactions.empire.faction.Faction;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -13,6 +14,7 @@ import org.bukkit.entity.Player;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -71,13 +73,12 @@ public class StringUtils {
         return result.length() > 0 ? result.substring(0, result.length() - 2) : "N/A";
     }
 
-    public static String getOnlineMembersFormatted(Empire empire) {
-        List<UUID> members = empire.getOnline();
-
+    public static String getFormattedAllies(Empire empire, List<UUID> allies) {
         StringBuilder result = new StringBuilder();
-        for (UUID member : members) {
-            OfflinePlayer player = Bukkit.getOfflinePlayer(member);
-            result.append(player.getName());
+        for (UUID ally : allies) {
+            Optional<Faction> faction = empire.byFactionUUID(ally);
+            if (!faction.isPresent()) continue;
+            result.append(faction.get().getName());
             result.append("&7, ");
         }
         return result.length() > 0 ? result.substring(0, result.length() - 2) : "N/A";

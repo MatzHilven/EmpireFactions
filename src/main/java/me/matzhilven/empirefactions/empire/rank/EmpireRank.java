@@ -1,6 +1,6 @@
 package me.matzhilven.empirefactions.empire.rank;
 
-public enum FactionRank {
+public enum EmpireRank {
     LEADER("Leader"),
     ADMIN("Admin"),
     MODERATOR("Moderator"),
@@ -8,7 +8,7 @@ public enum FactionRank {
 
     private final String name;
 
-    FactionRank(String name) {
+    EmpireRank(String name) {
         this.name = name;
     }
 

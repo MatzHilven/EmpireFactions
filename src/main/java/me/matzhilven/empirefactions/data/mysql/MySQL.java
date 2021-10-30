@@ -10,13 +10,10 @@ import java.sql.Statement;
 
 public class MySQL extends Database {
 
-    private final EmpireFactions main;
-
     private final DataSource dataSource;
 
     public MySQL(EmpireFactions main) {
         super(main);
-        this.main = main;
         this.dataSource = new DataSource(main);
     }
 
@@ -37,6 +34,7 @@ public class MySQL extends Database {
 
             s = connection.createStatement();
             String empiresTable = "CREATE TABLE IF NOT EXISTS empires (" +
+                    "`id` int NOT NULL AUTO_INCREMENT," +
                     "`uuid` varchar(36) NOT NULL," +
                     "`name` varchar(100) NOT NULL," +
                     "`description` text NOT NULL," +
@@ -44,10 +42,12 @@ public class MySQL extends Database {
                     "`admins` text NOT NULL," +
                     "`moderators` text NOT NULL," +
                     "`members` text NOT NULL," +
+                    "`baseCenter` text NOT NULL," +
+                    "`jurisdictionCenter` text NOT NULL," +
                     "`color` varchar(20) NOT NULL," +
                     "`region` text NOT NULL," +
                     "`jurisdiction` text NOT NULL," +
-                    "PRIMARY KEY (`uuid`)" +
+                    "PRIMARY KEY (`id`)" +
                     ");";
             s.executeUpdate(empiresTable);
 
@@ -60,6 +60,16 @@ public class MySQL extends Database {
                     "`leader` varchar(36) NOT NULL," +
                     "`members` text NOT NULL," +
                     "`claimed` text NOT NULL," +
+                    "`balance` bigint(255) NOT NULL," +
+                    "`kills` int NOT NULL," +
+                    "`deaths` int NOT NULL," +
+                    "`allies` text NOT NULL," +
+                    "`allowedAllies` text NOT NULL," +
+                    "`isOpen` boolean NOT NULL," +
+                    "`home` text," +
+                    "`tag` text NOT NULL," +
+                    "`title` text NOT NULL," +
+                    "`founded` timestamp NOT NULL," +
                     "PRIMARY KEY (`uuid`)" +
                     ");";
             s.executeUpdate(factionsTable);
@@ -76,6 +86,15 @@ public class MySQL extends Database {
                     ");";
 
             s.executeUpdate(coresTable);
+
+            s = connection.createStatement();
+            String playersTable = "CREATE TABLE IF NOT EXISTS players (" +
+                    "`uuid` varchar(36) NOT NULL," +
+                    "`empire_uuid` varchar(36) NOT NULL," +
+                    "`power` varchar(100) NOT NULL," +
+                    "PRIMARY KEY (`uuid`)" +
+                    ");";
+            s.executeUpdate(playersTable);
 
             s.close();
             connection.close();

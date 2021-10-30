@@ -12,6 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,43 +28,94 @@ public class FactionInfoSubCommand implements SubCommand {
 
     @Override
     public void onCommand(CommandSender sender, Command command, String[] args) {
-        if (args.length != 2) {
+        if (args.length < 1) {
             StringUtils.sendMessage(sender, getUsage());
             return;
         }
 
-        Player player = (Player) sender;
+        if (args.length == 1) {
+            Player player = (Player) sender;
 
-        Optional<Empire> optionalEmpire = main.getEmpireManager().getEmpire(player);
+            Optional<Empire> optionalEmpire = main.getEmpireManager().getEmpire(player);
 
-        if (!optionalEmpire.isPresent()) {
-            StringUtils.sendMessage(sender,Messager.NOT_IN_EMPIRE);
-            return;
+            if (!optionalEmpire.isPresent()) {
+                StringUtils.sendMessage(sender,Messager.NOT_IN_EMPIRE);
+                return;
+            }
+
+            Empire empire = optionalEmpire.get();
+
+            Optional<Faction> optionalFaction = empire.getFaction(player);
+
+            if (!optionalFaction.isPresent()) {
+                StringUtils.sendMessage(sender,Messager.NOT_IN_FACTION);
+                return;
+            }
+
+            Faction faction = optionalFaction.get();
+
+            List<String> msg = new ArrayList<>();
+
+            for (String s : Messager.FACTION_INFO) {
+                msg.add(s
+                        .replace("%faction%", faction.getNameColored())
+                        .replace("%power%", StringUtils.format(faction.getPower()))
+                        .replace("%founded%", DateTimeFormatter.ofPattern("yyyyy-MM-dd hh:mm:ss").format(faction.getFounded().toLocalDateTime()))
+                        .replace("%description%", faction.getDescription())
+                        .replace("%members_count%", String.valueOf(faction.getMembers().size() + 1))
+                        .replace("%kills%", StringUtils.format(faction.getKills()))
+                        .replace("%deaths%", StringUtils.format(faction.getDeaths()))
+                        .replace("%balance%", StringUtils.format(faction.getBalance()))
+                        .replace("%status%", faction.isOpen() ? "&aOpen" : "&cClosed")
+                        .replace("%leader%", Bukkit.getOfflinePlayer(faction.getLeader()).getName() == null ? "N/A" :  Bukkit.getOfflinePlayer(faction.getLeader()).getName())
+                        .replace("%members%", StringUtils.getFormattedList(faction.getMembers()))
+                        .replace("%allies%", StringUtils.getFormattedAllies(empire, faction.getAllies()))
+                        .replace("%allowed_allies%", StringUtils.getFormattedAllies(empire, faction.getAllowedAllies()))
+                        );
+            }
+
+            StringUtils.sendMessage(sender, msg);
+        } else {
+            Player player = (Player) sender;
+
+            Optional<Empire> optionalEmpire = main.getEmpireManager().getEmpire(player);
+
+            if (!optionalEmpire.isPresent()) {
+                StringUtils.sendMessage(sender,Messager.NOT_IN_EMPIRE);
+                return;
+            }
+
+            Empire empire = optionalEmpire.get();
+
+            Optional<Faction> optionalFaction = empire.getFaction(args[1]);
+
+            if (!optionalFaction.isPresent()) {
+                StringUtils.sendMessage(sender,Messager.INVALID_FACTION);
+                return;
+            }
+
+            Faction faction = optionalFaction.get();
+
+            List<String> msg = new ArrayList<>();
+
+            for (String s : Messager.FACTION_INFO) {
+                msg.add(s
+                        .replace("%faction%", faction.getNameColored())
+                        .replace("%power%", StringUtils.format(faction.getPower()))
+                        .replace("%founded%", DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss").format(faction.getFounded().toLocalDateTime()))
+                        .replace("%description%", faction.getDescription())
+                        .replace("%members_count%", String.valueOf(faction.getMembers().size() + 1))
+                        .replace("%kills%", StringUtils.format(faction.getKills()))
+                        .replace("%deaths%", StringUtils.format(faction.getDeaths()))
+                        .replace("%balance%", StringUtils.format(faction.getBalance()))
+                        .replace("%status%", faction.isOpen() ? "&aOpen" : "&cClosed")
+                        .replace("%leader%", Bukkit.getOfflinePlayer(faction.getLeader()).getName() == null ? "N/A" :  Bukkit.getOfflinePlayer(faction.getLeader()).getName())
+                        .replace("%members%", StringUtils.getFormattedList(faction.getMembers())));
+            }
+
+            StringUtils.sendMessage(sender, msg);
         }
 
-        Empire empire = optionalEmpire.get();
-
-        Optional<Faction> optionalFaction = empire.getFaction(player);
-
-        if (!optionalFaction.isPresent()) {
-            StringUtils.sendMessage(sender,Messager.NOT_IN_FACTION);
-            return;
-        }
-
-        Faction faction = optionalFaction.get();
-
-        List<String> msg = new ArrayList<>();
-
-        for (String s : Messager.FACTION_INFO) {
-            msg.add(s
-                    .replace("%faction%", faction.getNameColored())
-                    .replace("%description%", faction.getDescription())
-                    .replace("%members_count%", String.valueOf(faction.getMembers().size() + 1))
-                    .replace("%leader%", Bukkit.getOfflinePlayer(faction.getLeader()).getName() == null ? "N/A" :  Bukkit.getOfflinePlayer(faction.getLeader()).getName())
-                    .replace("%members%", StringUtils.getFormattedList(faction.getMembers())));
-        }
-
-        StringUtils.sendMessage(sender, msg);
     }
 
     @Override
@@ -90,10 +142,5 @@ public class FactionInfoSubCommand implements SubCommand {
     @Override
     public String getUsage() {
         return Messager.USAGE_INFO_FACTION;
-    }
-
-    @Override
-    public String getPermission() {
-        return "faction.info";
     }
 }

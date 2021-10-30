@@ -4,6 +4,7 @@ import me.matzhilven.empirefactions.EmpireFactions;
 import me.matzhilven.empirefactions.commands.SubCommand;
 import me.matzhilven.empirefactions.empire.Empire;
 import me.matzhilven.empirefactions.empire.faction.Faction;
+import me.matzhilven.empirefactions.empire.rank.EmpireRank;
 import me.matzhilven.empirefactions.utils.Messager;
 import me.matzhilven.empirefactions.utils.StringUtils;
 import org.bukkit.Bukkit;
@@ -27,12 +28,43 @@ public class FactionDisbandSubCommand implements SubCommand {
 
     @Override
     public void onCommand(CommandSender sender, Command command, String[] args) {
+        Player player = (Player) sender;
+
+        if (main.getAdminManager().isIn(player)) {
+            if (args.length != 2) {
+                StringUtils.sendMessage(sender, Messager.HELP_ADMIN);
+                return;
+            }
+
+            Empire empire = null;
+            Faction faction = null;
+
+            for (Empire loopEmpire : main.getEmpireManager().getEmpires()) {
+                Optional<Faction> optionalFaction = loopEmpire.getFaction(args[1]);
+                if (optionalFaction.isPresent()) {
+                    empire = loopEmpire;
+                    faction = optionalFaction.get();
+                    break;
+                }
+            }
+
+            if (faction == null) {
+                StringUtils.sendMessage(sender, Messager.INVALID_FACTION);
+                return;
+            }
+
+            empire.removeSubFaction(faction);
+            StringUtils.sendMessage(sender, Messager.DISBAND_SUCCESS_FACTION.replace("%faction%", faction.getNameColored()));
+            Faction finalFaction = faction;
+            empire.getStaff().stream().filter(player1 -> !player1.equals(player))
+                    .forEach(player1 -> StringUtils.sendMessage(player1, Messager.DISBAND_SUCCESS_FACTION.replace("%faction%", finalFaction.getNameColored())));
+
+        }
+
         if (args.length != 1) {
             StringUtils.sendMessage(sender, getUsage());
             return;
         }
-
-        Player player = (Player) sender;
 
         Optional<Empire> optionalEmpire = main.getEmpireManager().getEmpire(player);
 
@@ -51,6 +83,11 @@ public class FactionDisbandSubCommand implements SubCommand {
         }
 
         Faction faction = optionalFaction.get();
+
+        if (empire.getRank(player) != EmpireRank.LEADER && empire.getRank(player) != EmpireRank.ADMIN && !faction.isLeader(player)) {
+            StringUtils.sendMessage(sender,Messager.INVALID_PERMISSION);
+            return;
+        }
 
         empire.removeSubFaction(faction);
 
@@ -83,10 +120,5 @@ public class FactionDisbandSubCommand implements SubCommand {
     @Override
     public String getUsage() {
         return Messager.USAGE_DISBAND_FACTION;
-    }
-
-    @Override
-    public String getPermission() {
-        return "faction.disband";
     }
 }
